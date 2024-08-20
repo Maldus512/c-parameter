@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
@@ -231,47 +232,88 @@ int parameter_to_bool(parameter_handle_t *handle) {
 }
 
 
-void parameter_to_string_format(parameter_handle_t *handle, char *result, char *format) {
+void parameter_to_string(parameter_handle_t *handle, char *result, uint16_t decimals) {
+    int divisor = 1;
+    for (uint16_t i = 0; i < decimals; i++) {
+        divisor *= 10;
+    }
+
     if (handle) {
         switch (handle->type) {
-            case PARAMETER_TYPE_UINT8:
-                sprintf(result, format, *(uint8_t *)handle->pointer);
+            case PARAMETER_TYPE_UINT8: {
+                uint8_t value = *(uint8_t *)handle->pointer;
+                if (divisor == 1) {
+                    sprintf(result, "%" PRIu8, value);
+                } else {
+                    sprintf(result, "%" PRIu8 ".%" PRIu8, value / divisor, value % divisor);
+                }
                 break;
-            case PARAMETER_TYPE_INT8:
-                sprintf(result, format, *(int8_t *)handle->pointer);
+            }
+            case PARAMETER_TYPE_INT8: {
+                int8_t value = *(int8_t *)handle->pointer;
+                if (divisor == 1) {
+                    sprintf(result, "%" PRIi8, value);
+                } else {
+                    sprintf(result, "%" PRIi8 ".%" PRIi8, value / divisor, value % divisor);
+                }
                 break;
+            }
 #if C_PARAMETER_MAX_SIZE >= 2
-            case PARAMETER_TYPE_UINT16:
-                sprintf(result, format, *(uint16_t *)handle->pointer);
+            case PARAMETER_TYPE_UINT16: {
+                uint16_t value = *(uint16_t *)handle->pointer;
+                if (divisor == 1) {
+                    sprintf(result, "%" PRIu16, value);
+                } else {
+                    sprintf(result, "%" PRIu16 ".%" PRIu16, value / divisor, value % divisor);
+                }
                 break;
-            case PARAMETER_TYPE_INT16:
-                sprintf(result, format, *(int16_t *)handle->pointer);
+            }
+            case PARAMETER_TYPE_INT16: {
+                int16_t value = *(int16_t *)handle->pointer;
+                if (divisor == 1) {
+                    sprintf(result, "%" PRIi16, value);
+                } else {
+                    sprintf(result, "%" PRIi16 ".%" PRIi16, value / divisor, value % divisor);
+                }
                 break;
+            }
 #endif
 #if C_PARAMETER_MAX_SIZE >= 4
-            case PARAMETER_TYPE_UINT32:
-                sprintf(result, format, *(uint32_t *)handle->pointer);
+            case PARAMETER_TYPE_UINT32: {
+                uint32_t value = *(uint32_t *)handle->pointer;
+                if (divisor == 1) {
+                    sprintf(result, "%" PRIu32, value);
+                } else {
+                    sprintf(result, "%" PRIu32 ".%" PRIu32, value / divisor, value % divisor);
+                }
                 break;
-            case PARAMETER_TYPE_INT32:
-                sprintf(result, format, *(int32_t *)handle->pointer);
+            }
+            case PARAMETER_TYPE_INT32: {
+                int32_t value = *(int32_t *)handle->pointer;
+                if (divisor == 1) {
+                    sprintf(result, "%" PRIi32, value);
+                } else {
+                    sprintf(result, "%" PRIi32 ".%" PRIi32, value / divisor, value % divisor);
+                }
                 break;
+            }
 #endif
 #if C_PARAMETER_MAX_SIZE >= 8
             case PARAMETER_TYPE_UINT64:
-                sprintf(result, format, *(uint64_t *)handle->pointer);
+                sprintf(result, "%" PRIu64, *(uint64_t *)handle->pointer);
                 break;
             case PARAMETER_TYPE_INT64:
-                sprintf(result, format, *(int64_t *)handle->pointer);
+                sprintf(result, "%" PRIi64, *(int64_t *)handle->pointer);
                 break;
 #endif
 #if C_PARAMETER_MAX_SIZE >= 4
             case PARAMETER_TYPE_FLOAT:
-                sprintf(result, format, *(float *)handle->pointer);
+                sprintf(result, "%f", *(float *)handle->pointer);
                 break;
 #endif
 #if C_PARAMETER_MAX_SIZE >= 8
             case PARAMETER_TYPE_DOUBLE:
-                sprintf(result, format, *(double *)handle->pointer);
+                sprintf(result, "%f", *(double *)handle->pointer);
                 break;
 #endif
         }

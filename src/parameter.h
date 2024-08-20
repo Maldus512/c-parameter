@@ -42,18 +42,17 @@
 
 
 #define _PARAMETER_VALUE_TYPE(x)                                                                                       \
-    _Generic((x),                                                                                                      \
-        uint8_t: PARAMETER_TYPE_UINT8,                                                                                 \
-        int8_t: PARAMETER_TYPE_INT8,                                                                                   \
-        uint16_t: _PARAMETER_TYPE_UINT16,                                                                              \
-        int16_t: _PARAMETER_TYPE_INT16,                                                                                \
-        uint32_t: _PARAMETER_TYPE_UINT32,                                                                              \
-        int32_t: _PARAMETER_TYPE_INT32,                                                                                \
-        uint64_t: _PARAMETER_TYPE_UINT64,                                                                              \
-        int64_t: _PARAMETER_TYPE_INT64,                                                                                \
-        float: _PARAMETER_TYPE_FLOAT,                                                                                  \
-        double: _PARAMETER_TYPE_DOUBLE,                                                                                \
-        default: 0)
+    _Generic((x), uint8_t                                                                                              \
+             : PARAMETER_TYPE_UINT8, int8_t                                                                            \
+             : PARAMETER_TYPE_INT8, uint16_t                                                                           \
+             : _PARAMETER_TYPE_UINT16, int16_t                                                                         \
+             : _PARAMETER_TYPE_INT16, uint32_t                                                                         \
+             : _PARAMETER_TYPE_UINT32, int32_t                                                                         \
+             : _PARAMETER_TYPE_INT32, uint64_t                                                                         \
+             : _PARAMETER_TYPE_UINT64, int64_t                                                                         \
+             : _PARAMETER_TYPE_INT64, float                                                                            \
+             : _PARAMETER_TYPE_FLOAT, double                                                                           \
+             : _PARAMETER_TYPE_DOUBLE, default : 0)
 
 
 #if C_PARAMETER_MAX_SIZE >= 2
@@ -95,17 +94,17 @@
 #endif
 
 #define _PARAMETER_LIMIT_VALUE_OPTION(ref, x)                                                                          \
-    _Generic((ref),                                                                                                    \
-        uint8_t: (parameter_type_union_t){.u8 = (uint8_t)((uint8_t)x & 0xFF)},                                         \
-        int8_t: (parameter_type_union_t){.i8 = (int8_t)((int8_t)x & 0xFF)},                                            \
-        uint16_t: (parameter_type_union_t){._PARAMETER_FIELD_UINT16 = (uint16_t)CAST16(x)},                            \
-        int16_t: (parameter_type_union_t){._PARAMETER_FIELD_INT16 = (int16_t)CAST16(x)},                               \
-        uint32_t: (parameter_type_union_t){._PARAMETER_FIELD_UINT32 = (uint32_t)CAST32(x)},                            \
-        int32_t: (parameter_type_union_t){._PARAMETER_FIELD_INT32 = (int32_t)CAST32(x)},                               \
-        uint64_t: (parameter_type_union_t){._PARAMETER_FIELD_UINT64 = (uint64_t)CAST64(x)},                            \
-        int64_t: (parameter_type_union_t){._PARAMETER_FIELD_INT64 = (int64_t)CAST64(x)},                               \
-        float: (parameter_type_union_t){._PARAMETER_FIELD_FLOAT = CASTFLOAT(x)},                                       \
-        double: (parameter_type_union_t){._PARAMETER_FIELD_DOUBLE = CASTDOUBLE(x)})
+    _Generic((ref), uint8_t                                                                                            \
+             : (parameter_type_union_t){.u8 = (uint8_t)((uint8_t)x & 0xFF)}, int8_t                                    \
+             : (parameter_type_union_t){.i8 = (int8_t)((int8_t)x & 0xFF)}, uint16_t                                    \
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT16 = (uint16_t)CAST16(x)}, int16_t                       \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT16 = (int16_t)CAST16(x)}, uint32_t                        \
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT32 = (uint32_t)CAST32(x)}, int32_t                       \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT32 = (int32_t)CAST32(x)}, uint64_t                        \
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT64 = (uint64_t)CAST64(x)}, int64_t                       \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT64 = (int64_t)CAST64(x)}, float                           \
+             : (parameter_type_union_t){._PARAMETER_FIELD_FLOAT = CASTFLOAT(x)}, double                                \
+             : (parameter_type_union_t){._PARAMETER_FIELD_DOUBLE = CASTDOUBLE(x)})
 
 #define PARAMETER_TYPE_UINT8_CAST(x)  ((parameter_type_union_t){.u8 = x})
 #define PARAMETER_TYPE_INT8_CAST(x)   ((parameter_type_union_t){.i8 = x})
@@ -123,7 +122,7 @@
                           type##_CAST(step), (lvl), (udata), (runtime), (arg)})
 
 #define PARAMETER_FULL(ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                                 \
-    ((parameter_handle_t){_PARAMETER_VALUE_TYPE(*ptr), (ptr), (pmin), (pmax),                                          \
+    ((parameter_handle_t){_PARAMETER_VALUE_TYPE(*ptr), (void *)(ptr), (pmin), (pmax),                                  \
                           _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (min)), _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (max)),  \
                           _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (def)), _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (step)), \
                           (lvl), (udata), (runtime), (arg)})
@@ -204,7 +203,7 @@ parameter_handle_t *parameter_get_handle(parameter_handle_t *ps, size_t length, 
 void               *parameter_get_user_data(parameter_handle_t *handle);
 void                parameter_reset_to_defaults(parameter_handle_t *ps, size_t length);
 int                 parameter_check_ranges(parameter_handle_t *ps, size_t length);
-void                parameter_to_string_format(parameter_handle_t *handle, char *result, char *format);
+void                parameter_to_string(parameter_handle_t *handle, char *result, uint16_t decimals);
 size_t              parameter_to_index(parameter_handle_t *handle);
 long                parameter_to_long(parameter_handle_t *handle);
 size_t              parameter_get_total_values(parameter_handle_t *handle);
